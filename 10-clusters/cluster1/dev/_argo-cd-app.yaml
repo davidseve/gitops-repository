@@ -1,0 +1,30 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app1-dev
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - chart: quarkus
+      repoURL: https://redhat-developer.github.io/redhat-helm-charts
+      targetRevision: 0.0.3
+      helm:
+        valueFiles:
+          - $values/base/values.yaml            
+          - $values/cluster1/values.yaml
+          - $values/cluster1/dev/values.yaml      
+          - $values/../../10-clusters/cluster1/values.yaml
+          - $values/../../10-clusters/cluster1/dev/values.yaml        
+    - ref: values
+      repoURL: 'https://github.com/davidseve/gitops-repository'
+      targetRevision: HEAD
+      path: 00-apps/app1
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

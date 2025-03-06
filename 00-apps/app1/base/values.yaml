@@ -1,0 +1,11 @@
+build:
+  enabled: false
+
+deploy:
+  route:
+    tls:
+      enabled: false
+  replicas: 1
+
+image:
+  name: quay.io/redhatworkshops/gitops-helm-quarkus
