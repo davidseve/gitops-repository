@@ -27,7 +27,7 @@ spec:
     spec:
       project: default
       sources:
-      - path: '{{.chart-path}}'
+      - path: '{{.chartPath}}'
         repoURL: '{{.repoURL}}'
         targetRevision: '{{.targetRevision}}'
         helm:
