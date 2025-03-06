@@ -1,5 +1,5 @@
 {
-    "path": "helm-chart/quarkus-0.0.3/quarkus",
+    "chart-path": "helm-chart/quarkus-0.0.3/quarkus",
     "repoURL": "https://github.com/davidseve/gitops-repository.git",
     "targetRevision": "HEAD"
 }
