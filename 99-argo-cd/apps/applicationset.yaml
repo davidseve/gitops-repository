@@ -11,13 +11,13 @@ spec:
         generators: 
           - git:
               repoURL: https://github.com/davidseve/gitops-repository.git
-              revision: HEAD
+              revision: testing
               directories:
               - path: 10-clusters/**/*
               pathParamPrefix: cluster                            
           - git:
               repoURL: https://github.com/davidseve/gitops-repository.git
-              revision: HEAD
+              revision: testing
               files:
               - path: 00-apps/**/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/chart-config.json
               pathParamPrefix: app         
@@ -39,7 +39,7 @@ spec:
             - $values/10-clusters/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/values.yaml        
       - ref: values
         repoURL: 'https://github.com/davidseve/gitops-repository.git'
-        targetRevision: HEAD
+        targetRevision: testing
       destination:
         server: 'https://kubernetes.default.svc'
         namespace: '{{index .cluster.path.segments 2}}'
