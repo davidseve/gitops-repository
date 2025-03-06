@@ -48,6 +48,47 @@ Contains cluster-specific configurations.
 Contains multi-cluster Argo CD configurations.
   - `apps/`: ApplicationSet configurations for multiple clusters.
 
+### chart-config.json
+
+The `chart-config.json` file is used to specify the Helm chart configuration for deploying applications in Argo CD. This file contains the necessary information to locate and use a specific Helm chart from a Helm repository.
+
+#### Key Fields
+
+- `chart`: The name of the Helm chart to be used. In this case, it is set to `quarkus`.
+- `repoURL`: The URL of the Helm chart repository where the chart is hosted. For example, `https://redhat-developer.github.io/redhat-helm-charts`.
+- `targetRevision`: The version of the Helm chart to be used. In this example, it is set to `0.0.3`.
+
+#### Example
+
+```json
+{
+    "chart": "quarkus",
+    "repoURL": "https://redhat-developer.github.io/redhat-helm-charts",
+    "targetRevision": "0.0.3"
+}
+```
+
+#### Usage in Argo CD
+
+This file is referenced in the Argo CD ApplicationSet configuration to define the source of the Helm chart for the application. The `chart`, `repoURL`, and `targetRevision` fields are used by Argo CD to fetch and deploy the specified Helm chart.
+
+#### Integration with ApplicationSet
+
+In the `applicationset.yaml` file, the `chart-config.json` file is used to dynamically generate applications for different clusters and environments. The path to this file is specified in the `generators` section of the ApplicationSet configuration.
+
+Example snippet from `applicationset.yaml`:
+
+```yaml
+generators:
+  - git:
+      repoURL: https://github.com/davidseve/gitops-repository.git
+      revision: HEAD
+      files:
+      - path: 00-apps/**/{{.cluster}}/{{.environment}}/chart-config.json
+```
+
+This configuration ensures that the correct Helm chart is used for each application deployment based on the cluster and environment.
+
 ## Usage
 
 ### Deploying Applications

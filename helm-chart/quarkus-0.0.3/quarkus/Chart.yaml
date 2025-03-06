@@ -1,0 +1,7 @@
+apiVersion: v2
+description: A Helm chart to build and deploy Quarkus applications
+keywords:
+- runtimes
+- quarkus
+name: quarkus
+version: 0.0.3

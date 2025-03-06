@@ -27,8 +27,8 @@ spec:
     spec:
       project: default
       sources:
-      - chart: quarkus
-        repoURL: https://redhat-developer.github.io/redhat-helm-charts
+      - chart: '{{.chart}}'
+        repoURL: '{{.repoURL}}'
         targetRevision: '{{.targetRevision}}'
         helm:
           valueFiles:
