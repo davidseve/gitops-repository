@@ -13,13 +13,13 @@ spec:
               repoURL: https://github.com/davidseve/gitops-repository.git
               revision: HEAD
               directories:
-              - path: 10-clusters/**/*
+              - path: clusters/**/*
               pathParamPrefix: cluster                            
           - git:
               repoURL: https://github.com/davidseve/gitops-repository.git
               revision: HEAD
               files:
-              - path: 00-apps/**/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/chart-config.json
+              - path: apps/**/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/chart-config.json
               pathParamPrefix: app         
   template:
     metadata:
@@ -32,11 +32,11 @@ spec:
         targetRevision: '{{.targetRevision}}'
         helm:
           valueFiles:
-            - $values/00-apps/{{index .app.path.segments 1}}/base/values.yaml            
-            - $values/00-apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 1}}/values.yaml
-            - $values/00-apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/values.yaml      
-            - $values/10-clusters/{{index .cluster.path.segments 1}}/values.yaml
-            - $values/10-clusters/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/values.yaml        
+            - $values/apps/{{index .app.path.segments 1}}/base/values.yaml            
+            - $values/apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 1}}/values.yaml
+            - $values/apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/values.yaml      
+            - $values/clusters/{{index .cluster.path.segments 1}}/values.yaml
+            - $values/clusters/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/values.yaml        
       - ref: values
         repoURL: 'https://github.com/davidseve/gitops-repository.git'
         targetRevision: HEAD

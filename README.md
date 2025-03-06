@@ -7,7 +7,7 @@ This repository contains the configuration for deploying applications using Argo
 ## Repository Structure
 
 ```
-00-apps/
+apps/
   app1/
     base/
       values.yaml
@@ -15,22 +15,21 @@ This repository contains the configuration for deploying applications using Argo
       values.yaml    
       dev/
         values.yaml
-10-clusters/
+clusters/
   cluster1/
     dev/
       values.yaml
     values.yaml
-99-argo-cd-multicluster/
+argo-cd-multicluster/
   apps/
     applicationset-app1.yaml
-README.md
 ```
 
 ### Directory Descriptions
 
 - 
 
-00-apps
+apps
 
 : Contains application-specific configurations.
   - `app1/`: Configuration for `app1`.
@@ -40,7 +39,7 @@ README.md
 
 - 
 
-10-clusters
+clusters
 
 : Contains cluster-specific configurations.
   - `cluster1/`: Configuration for `cluster1`.
@@ -48,7 +47,7 @@ README.md
 
 - 
 
-99-argo-cd-multicluster
+argo-cd
 
 : Contains multi-cluster Argo CD configurations.
   - `apps/`: ApplicationSet configurations for multiple clusters.
@@ -61,7 +60,7 @@ README.md
 2. Apply the ApplicationSet configuration for `app1`:
 
 ```sh
-kubectl apply -f 99-argo-cd/apps/applicationset.yaml
+kubectl apply -f argo-cd/apps/applicationset.yaml
 ```
 
 ## Contributing
