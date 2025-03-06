@@ -6,6 +6,8 @@ metadata:
   namespace: argocd
 spec:
   generators:
+    - directory:
+        path: 'apps/00-apps'
     - list:
         elements:
           - cluster: cluster1
@@ -22,18 +24,24 @@ spec:
           #   environment: prod
   template:
     metadata:
-      name: '{{cluster}}-{{environment}}-app1'
+      name: '{{cluster}}-{{environment}}-{{path.basename}}'
     spec:
       project: default
-      source:
-        repoURL: 'https://github.com/davidseve/gitops-repository'
-        targetRevision: HEAD
-        path: apps/app1/base
+      sources:
+      - chart: quarkus
+        repoURL: https://redhat-developer.github.io/redhat-helm-charts
+        targetRevision: 0.0.3
         helm:
           valueFiles:
-            - values.yaml
-            - ../../{{cluster}}/values.yaml
-            - ../../{{cluster}}/{{environment}}/values.yaml
+            - $values/base/values.yaml            
+            - $values/cluster1/values.yaml
+            - $values/cluster1/dev/values.yaml      
+            - $values/../../10-clusters/cluster1/values.yaml
+            - $values/../../10-clusters/cluster1/dev/values.yaml        
+      - ref: values
+        repoURL: 'https://github.com/davidseve/gitops-repository'
+        targetRevision: HEAD
+        path: '00-apps/{{path.basename}}'
       destination:
         server: 'https://kubernetes.default.svc'
         namespace: '{{environment}}'
