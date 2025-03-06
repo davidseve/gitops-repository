@@ -26,11 +26,11 @@ spec:
           - git:
               repoURL: https://github.com/davidseve/gitops-repository.git
               revision: HEAD
-              directories:
+              files:
               - path: 00-apps/**/{{.cluster}}/{{.environment}}/chart-config.json            
   template:
     metadata:
-      name: '{{.cluster}}-{{.environment}}-{{.path.basenameNormalized}}'
+      name: '{{.cluster}}-{{.environment}}-{{index .path.segments 1}}'
     spec:
       project: default
       sources:
@@ -39,9 +39,9 @@ spec:
         targetRevision: '{{.targetRevision}}'
         helm:
           valueFiles:
-            - $values/00-apps/{{.path.basenameNormalized}}/base/values.yaml            
-            - $values/00-apps/{{.path.basenameNormalized}}/{{.cluster}}/values.yaml
-            - $values/00-apps/{{.path.basenameNormalized}}/{{.cluster}}/{{.environment}}/values.yaml      
+            - $values/00-apps/{{index .path.segments 1}}/base/values.yaml            
+            - $values/00-apps/{{index .path.segments 1}}/{{.cluster}}/values.yaml
+            - $values/00-apps/{{index .path.segments 1}}/{{.cluster}}/{{.environment}}/values.yaml      
             - $values/10-clusters/{{.cluster}}/values.yaml
             - $values/10-clusters/{{.cluster}}/{{.environment}}/values.yaml        
       - ref: values
