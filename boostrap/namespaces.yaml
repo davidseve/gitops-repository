@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+  labels:
+    openshift-gitops.argoproj.io/managed-by: openshift-gitops
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+  labels:
+    openshift-gitops.argoproj.io/managed-by: openshift-gitops
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod
+  labels:
+    openshift-gitops.argoproj.io/managed-by: openshift-gitops

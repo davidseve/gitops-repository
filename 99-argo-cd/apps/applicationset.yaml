@@ -1,50 +1,55 @@
-
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: apps1
-  namespace: argocd
+  namespace: openshift-gitops
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
-    - directory:
-        path: 'apps/00-apps'
-    - list:
-        elements:
-          - cluster: cluster1
-            environment: dev
-          # - cluster: cluster1
-          #   environment: staging
-          # - cluster: cluster1
-          #   environment: prod
-          # - cluster: cluster2
-          #   environment: dev
-          # - cluster: cluster2
-          #   environment: staging
-          # - cluster: cluster2
-          #   environment: prod
+    - matrix:
+        generators: 
+          - list:
+              elements:
+                - cluster: cluster1
+                  environment: dev
+                # - cluster: cluster1
+                #   environment: staging
+                # - cluster: cluster1
+                #   environment: pro
+                # - cluster: cluster2
+                #   environment: dev
+                # - cluster: cluster2
+                #   environment: staging
+                # - cluster: cluster2
+                #   environment: pro
+          - git:
+              repoURL: https://github.com/davidseve/gitops-repository.git
+              revision: HEAD
+              directories:
+              - path: 00-apps/**/{{.cluster}}/{{.environment}}/chart-config.json            
   template:
     metadata:
-      name: '{{cluster}}-{{environment}}-{{path.basename}}'
+      name: '{{.cluster}}-{{.environment}}-{{.path.basenameNormalized}}'
     spec:
       project: default
       sources:
       - chart: quarkus
         repoURL: https://redhat-developer.github.io/redhat-helm-charts
-        targetRevision: 0.0.3
+        targetRevision: '{{.targetRevision}}'
         helm:
           valueFiles:
-            - $values/base/values.yaml            
-            - $values/cluster1/values.yaml
-            - $values/cluster1/dev/values.yaml      
-            - $values/../../10-clusters/cluster1/values.yaml
-            - $values/../../10-clusters/cluster1/dev/values.yaml        
+            - $values/00-apps/{{.path.basenameNormalized}}/base/values.yaml            
+            - $values/00-apps/{{.path.basenameNormalized}}/{{.cluster}}/values.yaml
+            - $values/00-apps/{{.path.basenameNormalized}}/{{.cluster}}/{{.environment}}/values.yaml      
+            - $values/10-clusters/{{.cluster}}/values.yaml
+            - $values/10-clusters/{{.cluster}}/{{.environment}}/values.yaml        
       - ref: values
-        repoURL: 'https://github.com/davidseve/gitops-repository'
+        repoURL: 'https://github.com/davidseve/gitops-repository.git'
         targetRevision: HEAD
-        path: '00-apps/{{path.basename}}'
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: '{{environment}}'
+        namespace: '{{.environment}}'
       syncPolicy:
         automated:
           prune: true
