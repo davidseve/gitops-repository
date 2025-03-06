@@ -27,29 +27,25 @@ argo-cd-multicluster/
 
 ### Directory Descriptions
 
-- 
+#### apps
 
-apps
-
-: Contains application-specific configurations.
+Contains application-specific configurations.
   - `app1/`: Configuration for `app1`.
     - `base/`: Base Helm values for `app1`.
     - `cluster1/`: Cluster-specific configurations for `cluster1`.
       - `dev/`: Environment-specific configurations for `dev` environment in `cluster1`.
 
-- 
+#### clusters
 
-clusters
-
-: Contains cluster-specific configurations.
+Contains cluster-specific configurations.
   - `cluster1/`: Configuration for `cluster1`.
     - `dev/`: Environment-specific configurations for `dev` environment in `cluster1`.
 
 - 
 
-argo-cd
+#### argo-cd
 
-: Contains multi-cluster Argo CD configurations.
+Contains multi-cluster Argo CD configurations.
   - `apps/`: ApplicationSet configurations for multiple clusters.
 
 ## Usage
