@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications-bootstrap
+  namespace: openshift-gitops
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators: 
+          - git:
+              repoURL: https://github.com/davidseve/gitops-repository.git
+              revision: HEAD
+              directories:
+              - path: 10-clusters/**/*
+              pathParamPrefix: cluster                            
+          - git:
+              repoURL: https://github.com/davidseve/gitops-repository.git
+              revision: HEAD
+              files:
+              - path: 00-apps/**/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/chart-config.json
+              pathParamPrefix: app         
+  template:
+    metadata:
+      name: '{{index .cluster.path.segments 1}}-{{index .cluster.path.segments 2}}-{{index .app.path.segments 1}}'
+    spec:
+      project: default
+      sources:
+      - chart: quarkus
+        repoURL: https://redhat-developer.github.io/redhat-helm-charts
+        targetRevision: '{{.targetRevision}}'
+        helm:
+          valueFiles:
+            - $values/00-apps/{{index .app.path.segments 1}}/base/values.yaml            
+            - $values/00-apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 1}}/values.yaml
+            - $values/00-apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/values.yaml      
+            - $values/10-clusters/{{index .cluster.path.segments 1}}/values.yaml
+            - $values/10-clusters/{{index .cluster.path.segments 1}}/{{index .cluster.path.segments 2}}/values.yaml        
+      - ref: values
+        repoURL: 'https://github.com/davidseve/gitops-repository.git'
+        targetRevision: HEAD
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{index .cluster.path.segments 2}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
