@@ -39,7 +39,7 @@ spec:
             - $values/apps/{{index .app.path.segments 1}}/{{.cluster}}/{{.environment}}/values.yaml      
             - $values/regions/regionSouth/clusters/{{.cluster}}/values.yaml
             - $values/regions/regionSouth/clusters/{{.cluster}}/{{.environment}}/values.yaml
-            - $values/regions/environments/{{.environment}}/values.yaml               
+            - $values/regions/regionSouth/environments/{{.environment}}/values.yaml               
       - ref: values
         repoURL: 'https://github.com/davidseve/gitops-repository.git'
         targetRevision: HEAD
