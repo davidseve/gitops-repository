@@ -97,7 +97,7 @@ This configuration ensures that the correct Helm chart is used for each applicat
 2. Apply the ApplicationSet configuration for `app1`:
 
 ```sh
-kubectl apply -f argo-cd/apps/applicationset.yaml
+oc apply -f argo-cd/apps/applicationset.yaml
 ```
 
 ## Contributing
