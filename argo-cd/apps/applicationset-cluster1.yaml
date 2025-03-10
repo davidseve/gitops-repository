@@ -25,7 +25,7 @@ spec:
               pathParamPrefix: app         
   template:
     metadata:
-      name: '{{.cluster}}-{{.environment}}-{{index .app.path.segments 1}}'
+      name: '{{index .app.path.segments 1}}-{{.environment}}-{{.cluster}}'
     spec:
       project: default
       sources:

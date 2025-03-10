@@ -23,7 +23,7 @@ spec:
               pathParamPrefix: app         
   template:
     metadata:
-      name: '{{index .cluster.path.segments 1}}-{{index .cluster.path.segments 2}}-{{index .app.path.segments 1}}'
+      name: '{{index .app.path.segments 1}}-{{index .cluster.path.segments 2}}-{{index .cluster.path.segments 1}}'
     spec:
       project: default
       sources:
