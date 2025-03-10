@@ -11,11 +11,11 @@ spec:
         generators: 
           - list:
               elements:
-                - cluster: cluster-N-1
+                - cluster: cluster-n-1
                   environment: dev
-                - cluster: cluster-N-1
+                - cluster: cluster-n-1
                   environment: staging
-                - cluster: cluster-N-2
+                - cluster: cluster-n-2
                   environment: dev
           - git:
               repoURL: https://github.com/davidseve/gitops-repository.git
