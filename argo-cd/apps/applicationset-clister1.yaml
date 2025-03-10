@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: apps1
+  name: applications-bootstrap
   namespace: openshift-gitops
 spec:
   goTemplate: true
@@ -13,37 +13,32 @@ spec:
               elements:
                 - cluster: cluster1
                   environment: dev
-                # - cluster: cluster1
-                #   environment: staging
-                # - cluster: cluster1
-                #   environment: pro
-                # - cluster: cluster2
-                #   environment: dev
-                # - cluster: cluster2
-                #   environment: staging
+                - cluster: cluster1
+                  environment: staging
                 # - cluster: cluster2
                 #   environment: pro
           - git:
               repoURL: https://github.com/davidseve/gitops-repository.git
               revision: HEAD
               files:
-              - path: 00-apps/**/{{.cluster}}/{{.environment}}/chart-config.json            
+              - path: apps/**/{{.cluster}}/{{.environment}}/chart-config.json
+              pathParamPrefix: app         
   template:
     metadata:
-      name: '{{.cluster}}-{{.environment}}-{{index .path.segments 1}}'
+      name: '{{.cluster}}-{{.environment}}-{{index .app.path.segments 1}}'
     spec:
       project: default
       sources:
-      - chart: quarkus
-        repoURL: https://redhat-developer.github.io/redhat-helm-charts
+      - path: '{{.chartPath}}'
+        repoURL: '{{.repoURL}}'
         targetRevision: '{{.targetRevision}}'
         helm:
           valueFiles:
-            - $values/00-apps/{{index .path.segments 1}}/base/values.yaml            
-            - $values/00-apps/{{index .path.segments 1}}/{{.cluster}}/values.yaml
-            - $values/00-apps/{{index .path.segments 1}}/{{.cluster}}/{{.environment}}/values.yaml      
-            - $values/10-clusters/{{.cluster}}/values.yaml
-            - $values/10-clusters/{{.cluster}}/{{.environment}}/values.yaml        
+            - $values/apps/{{index .app.path.segments 1}}/base/values.yaml            
+            - $values/apps/{{index .app.path.segments 1}}/{{.cluster}}/values.yaml
+            - $values/apps/{{index .app.path.segments 1}}/{{.cluster}}/{{.environment}}/values.yaml      
+            - $values/clusters/{{.cluster}}/values.yaml
+            - $values/clusters/{{.cluster}}/{{.environment}}/values.yaml        
       - ref: values
         repoURL: 'https://github.com/davidseve/gitops-repository.git'
         targetRevision: HEAD
