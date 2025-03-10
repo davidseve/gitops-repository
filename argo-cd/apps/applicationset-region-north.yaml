@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: applications-bootstrap-cluster1
+  name: applications-bootstrap-regin-north
   namespace: openshift-gitops
 spec:
   goTemplate: true
@@ -11,15 +11,15 @@ spec:
         generators: 
           - list:
               elements:
-                - cluster: cluster1
+                - cluster: cluster-N-1
                   environment: dev
-                - cluster: cluster1
+                - cluster: cluster-N-1
                   environment: staging
-                # - cluster: cluster2
-                #   environment: pro
+                - cluster: cluster-N-2
+                  environment: dev
           - git:
               repoURL: https://github.com/davidseve/gitops-repository.git
-              revision: HEAD
+              revision: regions
               files:
               - path: apps/**/{{.cluster}}/{{.environment}}/chart-config.json
               pathParamPrefix: app         
@@ -37,11 +37,12 @@ spec:
             - $values/apps/{{index .app.path.segments 1}}/base/values.yaml            
             - $values/apps/{{index .app.path.segments 1}}/{{.cluster}}/values.yaml
             - $values/apps/{{index .app.path.segments 1}}/{{.cluster}}/{{.environment}}/values.yaml      
-            - $values/clusters/{{.cluster}}/values.yaml
-            - $values/clusters/{{.cluster}}/{{.environment}}/values.yaml        
+            - $values/regions/regionNorth/clusters/{{.cluster}}/values.yaml
+            - $values/regions/regionNorth/clusters/{{.cluster}}/{{.environment}}/values.yaml
+            - $values/regions/environments/{{.environment}}/values.yaml               
       - ref: values
         repoURL: 'https://github.com/davidseve/gitops-repository.git'
-        targetRevision: HEAD
+        targetRevision: regions
       destination:
         server: 'https://kubernetes.default.svc'
         namespace: '{{.environment}}'
