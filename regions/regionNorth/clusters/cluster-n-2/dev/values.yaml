@@ -1,0 +1,6 @@
+
+deploy:
+  route:
+    tls:
+      enabled: false
+  replicas: 3
