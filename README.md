@@ -7,22 +7,45 @@ This repository contains the configuration for deploying applications using Argo
 ## Repository Structure
 
 ```
-apps/
-  app1/
-    base/
-      values.yaml
-    cluster1/
-      values.yaml    
-      dev/
-        values.yaml
-clusters/
-  cluster1/
-    dev/
-      values.yaml
-    values.yaml
-argo-cd-multicluster/
-  apps/
-    applicationset-app1.yaml
+├── argo-cd
+│   └── apps
+│       ├── applicationset-region-north.yaml
+│       ├── applicationset-region-south.yaml
+│       └── applicationset.yaml
+├── apps
+│   ├── app1
+│   │   ├── base
+│   │   │   └── values.yaml
+│   │   └── cluster-n-1
+│   │       ├── dev
+│   │       │   ├── chart-config.json
+│   │       │   └── values.yaml
+│   │       ├── staging
+│   │       │   ├── chart-config.json
+│   │       │   └── values.yaml
+│   │       └── values.yaml
+│   └── app2
+│       └── ... (similar structure)
+│   
+└── regions
+    ├── regionNorth
+    │   ├── clusters
+    │   │   ├── cluster-n-1
+    │   │   │   ├── dev
+    │   │   │   │   └── values.yaml
+    │   │   │   ├── staging
+    │   │   │   └── values.yaml
+    │   │   └── cluster-N-2
+    │   │       ├── dev
+    │   │       │   └── values.yaml
+    │   │       └── values.yaml
+    │   └── environments
+    │       ├── dev
+    │       │   └── values.yaml
+    │       └── staging
+    │           └── values.yaml
+    └── regionSouth
+        └── ... (similar structure)
 ```
 
 ### Directory Descriptions
