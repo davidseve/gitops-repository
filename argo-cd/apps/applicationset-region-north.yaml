@@ -9,23 +9,21 @@ spec:
   generators:
     - matrix:
         generators: 
-          - list:
-              elements:
-                - cluster: cluster-n-1
-                  environment: dev
-                - cluster: cluster-n-1
-                  environment: staging
-                - cluster: cluster-n-2
-                  environment: dev
+          - git:
+              repoURL: https://github.com/davidseve/gitops-repository.git
+              revision: regions
+              directories:
+              - path: regions/regionNorth/clusters/**/*
+              pathParamPrefix: cluster     
           - git:
               repoURL: https://github.com/davidseve/gitops-repository.git
               revision: regions
               files:
-              - path: apps/**/{{.cluster}}/{{.environment}}/chart-config.json
+              - path: apps/**/{{index .cluster.path.segments 3}}/{{index .cluster.path.segments 4}}/chart-config.json
               pathParamPrefix: app         
   template:
     metadata:
-      name: '{{index .app.path.segments 1}}-{{.environment}}-{{.cluster}}'
+      name: '{{index .app.path.segments 1}}-{{index .cluster.path.segments 4}}-{{index .cluster.path.segments 3}}'
     spec:
       project: default
       sources:
@@ -35,17 +33,17 @@ spec:
         helm:
           valueFiles:
             - $values/apps/{{index .app.path.segments 1}}/base/values.yaml            
-            - $values/apps/{{index .app.path.segments 1}}/{{.cluster}}/values.yaml
-            - $values/apps/{{index .app.path.segments 1}}/{{.cluster}}/{{.environment}}/values.yaml      
-            - $values/regions/regionNorth/clusters/{{.cluster}}/values.yaml
-            - $values/regions/regionNorth/clusters/{{.cluster}}/{{.environment}}/values.yaml
-            - $values/regions/regionNorth/environments/{{.environment}}/values.yaml               
+            - $values/apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 3}}/values.yaml
+            - $values/apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 3}}/{{index .cluster.path.segments 4}}/values.yaml      
+            - $values/regions/regionNorth/clusters/{{index .cluster.path.segments 3}}/values.yaml
+            - $values/regions/regionNorth/clusters/{{index .cluster.path.segments 3}}/{{index .cluster.path.segments 4}}/values.yaml
+            - $values/regions/regionNorth/environments/{{index .cluster.path.segments 4}}/values.yaml               
       - ref: values
         repoURL: 'https://github.com/davidseve/gitops-repository.git'
         targetRevision: regions
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: '{{.environment}}'
+        namespace: '{{index .cluster.path.segments 4}}'
       syncPolicy:
         automated:
           prune: true

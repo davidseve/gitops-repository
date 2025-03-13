@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications-bootstrap-regin-north
+  namespace: openshift-gitops
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators: 
+          - list:
+              elements:
+                - cluster: cluster-n-1
+                  environment: dev
+                - cluster: cluster-n-1
+                  environment: staging
+                - cluster: cluster-n-2
+                  environment: dev
+          - git:
+              repoURL: https://github.com/davidseve/gitops-repository.git
+              revision: regions
+              files:
+              - path: apps/**/{{.cluster}}/{{.environment}}/chart-config.json
+              pathParamPrefix: app         
+  template:
+    metadata:
+      name: '{{index .app.path.segments 1}}-{{.environment}}-{{.cluster}}'
+    spec:
+      project: default
+      sources:
+      - path: '{{.chartPath}}'
+        repoURL: '{{.repoURL}}'
+        targetRevision: '{{.targetRevision}}'
+        helm:
+          valueFiles:
+            - $values/apps/{{index .app.path.segments 1}}/base/values.yaml            
+            - $values/apps/{{index .app.path.segments 1}}/{{.cluster}}/values.yaml
+            - $values/apps/{{index .app.path.segments 1}}/{{.cluster}}/{{.environment}}/values.yaml      
+            - $values/regions/regionNorth/clusters/{{.cluster}}/values.yaml
+            - $values/regions/regionNorth/clusters/{{.cluster}}/{{.environment}}/values.yaml
+            - $values/regions/regionNorth/environments/{{.environment}}/values.yaml               
+      - ref: values
+        repoURL: 'https://github.com/davidseve/gitops-repository.git'
+        targetRevision: regions
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{.environment}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
