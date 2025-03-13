@@ -52,7 +52,6 @@ fi
 # apply resources
 oc apply -f ./argocd-cluster-role-binding.yaml
 oc apply -f ./namespaces.yaml
-oc apply -f ../argo-cd/apps/applicationset.yaml
 
 
 echo "ArgoCD route:"

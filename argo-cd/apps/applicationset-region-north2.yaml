@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications-bootstrap-regin-north
+  namespace: openshift-gitops
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators: 
+          - git:
+              repoURL: https://github.com/davidseve/gitops-repository.git
+              revision: regions
+              directories:
+              - path: regions/regionNorth/clusters/**/*
+              pathParamPrefix: cluster     
+          - git:
+              repoURL: https://github.com/davidseve/gitops-repository.git
+              revision: regions
+              files:
+              - path: apps/**/{{index .cluster.path.segments 3}}/{{index .cluster.path.segments 4}}/chart-config.json
+              pathParamPrefix: app         
+  template:
+    metadata:
+      name: '{{index .app.path.segments 1}}-{{index .cluster.path.segments 4}}-{{index .cluster.path.segments 3}}'
+    spec:
+      project: default
+      sources:
+      - path: '{{.chartPath}}'
+        repoURL: '{{.repoURL}}'
+        targetRevision: '{{.targetRevision}}'
+        helm:
+          valueFiles:
+            - $values/apps/{{index .app.path.segments 1}}/base/values.yaml            
+            - $values/apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 3}}/values.yaml
+            - $values/apps/{{index .app.path.segments 1}}/{{index .cluster.path.segments 3}}/{{index .cluster.path.segments 4}}/values.yaml      
+            - $values/regions/regionNorth/clusters/{{index .cluster.path.segments 3}}/values.yaml
+            - $values/regions/regionNorth/clusters/{{index .cluster.path.segments 3}}/{{index .cluster.path.segments 4}}/values.yaml
+            - $values/regions/regionNorth/environments/{{index .cluster.path.segments 4}}/values.yaml               
+      - ref: values
+        repoURL: 'https://github.com/davidseve/gitops-repository.git'
+        targetRevision: regions
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{index .cluster.path.segments 4}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
